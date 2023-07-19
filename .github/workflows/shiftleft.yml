@@ -38,7 +38,9 @@ jobs:
       run: ${GITHUB_WORKSPACE}/sl analyze --strict --wait --analysis-timeout=1h --app Benchmark --tag branch=${{ github.head_ref || steps.extract_branch.outputs.branch }} --java --cpg target/benchmark.war
       env:
         SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}
-        
+        SHIFTLEFT_API_HOST: www.shiftleft.io
+        SHIFTLEFT_GRPC_TELEMETRY_HOST: telemetry.shiftleft.io:443
+        SHIFTLEFT_GRPC_API_HOST: api.shiftleft.io:443
   OWASP-Benchmark-Score:
     runs-on: ubuntu-20.04
     needs: NextGen-Static-Analysis
@@ -59,7 +61,9 @@ jobs:
         python3 export.py --app Benchmark -f sl -o ${GITHUB_WORKSPACE}/ngsast_results/Benchmark.sl
       env:
         SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}
-        
+        SHIFTLEFT_API_HOST: www.shiftleft.io
+        SHIFTLEFT_GRPC_TELEMETRY_HOST: telemetry.shiftleft.io:443
+        SHIFTLEFT_GRPC_API_HOST: api.shiftleft.io:443
     - name: Package with maven
       run: mvn compile package
     - name: Calculate OWASP Benchmark Score
@@ -100,7 +104,9 @@ jobs:
         OWASP_BENCHMARK_CHECKSUM: ${{ env.OWASP_BENCHMARK_CHECKSUM }}
         SHIFTLEFT_USER_ID_V2: a352f6e6-5ee3-4a31-b130-9008a5de7c2e
         SHIFTLEFT_ACCESS_TOKEN: ${{ secrets.SHIFTLEFT_ACCESS_TOKEN }}
-        
+        SHIFTLEFT_API_HOST: www.shiftleft.io
+        SHIFTLEFT_GRPC_TELEMETRY_HOST: telemetry.shiftleft.io:443
+        SHIFTLEFT_GRPC_API_HOST: api.shiftleft.io:443
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
@@ -126,7 +132,7 @@ jobs:
           } = process.env;
           const decoded = jwt_decode(SHIFTLEFT_ACCESS_TOKEN);
           const orgID = decoded.orgID;
-          const apiHost = SHIFTLEFT_API_HOST || 'www.shiftleft.io';
+          const apiHost = SHIFTLEFT_API_HOST || 'app.shiftleft.io';
           fetch(`https://${apiHost}/api/v4/private/orgs/${orgID}/bi_proxy/owasp_benchmark_complete`, {
             headers: {
               "Content-Type": "application/json; charset=utf-8",
